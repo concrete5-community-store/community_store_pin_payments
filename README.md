@@ -1,4 +1,4 @@
-# community_pin_payments
+# community_store_pin_payments
 Pin Payments add-on for Community Store for concrete5
 
 https://pin.net.au/
