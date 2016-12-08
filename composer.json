@@ -1,0 +1,5 @@
+{
+  "require": {
+    "omnipay/pin": "~2.0"
+  }
+}
