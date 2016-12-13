@@ -12,22 +12,22 @@ extract($vars);
 </div>
 
 <div class="form-group">
-    <label><?=t("Test Secret Key")?></label>
+    <?=$form->label('pinPaymentsTestPrivateApiKey',t('Test Secret Key'))?>
     <input type="text" name="pinPaymentsTestPrivateApiKey" value="<?= $pinPaymentsTestPrivateApiKey?>" class="form-control">
 </div>
 
 <div class="form-group">
-    <label><?=t("Test Publishable Key")?></label>
+    <?=$form->label('pinPaymentsTestPublicApiKey',t('Test Publishable Key'))?>
     <input type="text" name="pinPaymentsTestPublicApiKey" value="<?= $pinPaymentsTestPublicApiKey?>" class="form-control">
 </div>
 
 <div class="form-group">
-    <label><?=t("Live Secret Key")?></label>
+    <?=$form->label('pinPaymentsLivePrivateApiKey',t('Live Secret Key'))?>
     <input type="text" name="pinPaymentsLivePrivateApiKey" value="<?= $pinPaymentsLivePrivateApiKey?>" class="form-control">
 </div>
 
 <div class="form-group">
-    <label><?=t("Live Publishable Key")?></label>
+    <?=$form->label('pinPaymentsLivePublicApiKey',t('Live Publishable Key'))?>
     <input type="text" name="pinPaymentsLivePublicApiKey" value="<?= $pinPaymentsLivePublicApiKey?>" class="form-control">
 </div>
 

@@ -11,10 +11,7 @@ class Controller extends Package
 {
     protected $pkgHandle = 'community_store_pin_payments';
     protected $appVersionRequired = '5.7.5';
-    protected $pkgVersion = '0.9';
-    protected $pkgAutoloaderRegistries = array(
-        'src/Omnipay/Pin' => '\Omnipay\Pin'
-    );
+    protected $pkgVersion = '1.0';
 
     public function getPackageDescription()
     {

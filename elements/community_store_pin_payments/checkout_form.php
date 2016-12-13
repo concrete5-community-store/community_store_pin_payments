@@ -1,7 +1,7 @@
 <?php defined('C5_EXECUTE') or die(_("Access Denied."));
 extract($vars);
 ?>
-<script src="<?= URL::to('packages/community_store_pin_payments/js/jquery.payment.min.js');?>"></script>
+<script src="<?= str_replace('/index.php/', '/', URL::to('packages/community_store_pin_payments/js/jquery.payment.min.js'));?>"></script>
 <script src='https://cdn.pin.net.au/pin.v2.js'></script>
 
 <script>
