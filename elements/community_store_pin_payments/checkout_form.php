@@ -8,11 +8,15 @@ extract($vars);
     // 1. Wait for the page to load
     $(function() {
 
-        $('#cc-number').payment('formatCardNumber');
-        $('#cc-exp').payment('formatCardExpiry');
-        $('#cc-cvc').payment('formatCardCVC');
+        var form = $('#store-checkout-form-group-payment'),
+            submitButton = form.find("[data-payment-method-id=\"<?= $pmID; ?>\"] .store-btn-complete-order"),
+            pin_errorContainer = form.find('.pin-payment-errors');
 
-        $('#cc-number').bind("keyup change", function(e) {
+        $('#pin-cc-number').payment('formatCardNumber');
+        $('#pin-cc-exp').payment('formatCardExpiry');
+        $('#pin-cc-cvc').payment('formatCardCVC');
+
+        $('#pin-cc-number').bind("keyup change", function(e) {
             var validcard = $.payment.validateCardNumber($(this).val());
 
             if (validcard) {
@@ -20,7 +24,7 @@ extract($vars);
             }
         });
 
-        $('#cc-exp').bind("keyup change", function(e) {
+        $('#pin-cc-exp').bind("keyup change", function(e) {
             var validcard = $.payment.validateCardNumber($(this).val());
 
             var expiry = $(this).payment('cardExpiryVal');
@@ -31,22 +35,16 @@ extract($vars);
             }
         });
 
-        $('#cc-cvc').bind("keyup change", function(e) {
+        $('#pin-cc-cvc').bind("keyup change", function(e) {
             var validcv = $.payment.validateCardCVC($(this).val());
 
             if (validcv) {
-                $('#cc-cvc').closest('.form-group').removeClass('has-error');
+                $('#pin-cc-cvc').closest('.form-group').removeClass('has-error');
             }
         });
 
         // 2. Create an API object
         var pinApi = new Pin.Api('<?= $publicAPIKey; ?>', '<?= $mode; ?>');
-
-        var form = $('#store-checkout-form-group-payment'),
-            submitButton = form.find("[data-payment-method-id=\"<?= $pmID; ?>\"] .store-btn-complete-order"),
-            errorContainer = form.find('.payment-errors'),
-            errorList = errorContainer.find('ul'),
-            errorHeading = errorContainer.find('h3');
 
         // 3. Add a submit handler
         form.submit(function(e) {
@@ -57,43 +55,43 @@ extract($vars);
 
                 var allvalid = true;
 
-                var validcard = $.payment.validateCardNumber($('#cc-number').val());
+                var validcard = $.payment.validateCardNumber($('#pin-cc-number').val());
 
                 if (!validcard) {
-                    $('#cc-number').closest('.form-group').addClass('has-error');
+                    $('#pin-cc-number').closest('.form-group').addClass('has-error');
                     allvalid = false;
                 } else {
-                    $('#cc-number').closest('.form-group').removeClass('has-error');
+                    $('#pin-cc-number').closest('.form-group').removeClass('has-error');
                 }
 
-                var expiry = $('#cc-exp').payment('cardExpiryVal');
+                var expiry = $('#pin-cc-exp').payment('cardExpiryVal');
                 var validexpiry = $.payment.validateCardExpiry(expiry.month, expiry.year);
 
                 if (!validexpiry) {
-                    $('#cc-exp').closest('.form-group').addClass('has-error');
+                    $('#pin-cc-exp').closest('.form-group').addClass('has-error');
                     allvalid = false;
                 } else {
-                    $('#cc-exp').closest('.form-group').removeClass('has-error');
+                    $('#pin-cc-exp').closest('.form-group').removeClass('has-error');
                 }
 
-                var validcv = $.payment.validateCardCVC($('#cc-cvc').val());
+                var validcv = $.payment.validateCardCVC($('#pin-cc-cvc').val());
 
                 if (!validcv) {
-                    $('#cc-cvc').closest('.form-group').addClass('has-error');
+                    $('#pin-cc-cvc').closest('.form-group').addClass('has-error');
                     allvalid = false;
                 } else {
-                    $('#cc-cvc').closest('.form-group').removeClass('has-error');
+                    $('#pin-cc-cvc').closest('.form-group').removeClass('has-error');
                 }
 
                 if (!allvalid) {
                     if (!validcard) {
-                        $('#cc-number').focus()
+                        $('#pin-cc-number').focus()
                     } else {
                         if (!validexpiry) {
-                            $('#cc-exp').focus()
+                            $('#pin-cc-exp').focus()
                         } else {
                             if (!validcv) {
-                                $('#cc-cvc').focus()
+                                $('#pin-cc-cvc').focus()
                             }
                         }
                     }
@@ -102,21 +100,20 @@ extract($vars);
                 }
 
                 // Clear previous errors
-                errorList.empty();
-                errorHeading.empty();
-                errorContainer.hide();
+                pin_errorContainer.empty();
+                pin_errorContainer.hide();
 
                 // Disable the submit button to prevent multiple clicks
-                submitButton.attr({disabled: true});
+                submitButton.prop('disabled', true);
                 submitButton.val('<?= t('Processing...'); ?>');
 
                 // Fetch details required for the createToken call to Pin Payments
                 var card = {
-                    number: $('#cc-number').val(),
+                    number: $('#pin-cc-number').val(),
                     name:   $('#store-checkout-billing-first-name').val() + ' ' + $('#store-checkout-billing-last-name').val(),
                     expiry_month: expiry.month,
                     expiry_year: expiry.year,
-                    cvc: $('#cc-cvc').val(),
+                    cvc: $('#pin-cc-cvc').val(),
                     address_line1:    $('#store-checkout-billing-address-1').val(),
                     address_line2:    $('#store-checkout-billing-address-2').val(),
                     address_city:     $('#store-checkout-billing-city').val(),
@@ -126,13 +123,13 @@ extract($vars);
                 };
 
                 // Request a token for the card from Pin Payments
-                pinApi.createCardToken(card).then(handleSuccess, handleError).done();
+                pinApi.createCardToken(card).then(pin_handleSuccess, pin_handleError).done();
             } else {
                 // allow form to submit normally
             }
         });
 
-        function handleSuccess(card) {
+        function pin_handleSuccess(card) {
             // Add the card token to the form
             //
             // Once you have the card token on your server you can use your
@@ -150,18 +147,14 @@ extract($vars);
             form.get(0).submit();
         }
 
-        function handleError(response) {
-            errorHeading.text(response.error_description);
-
+        function pin_handleError(response) {
             if (response.messages) {
                 $.each(response.messages, function(index, paramError) {
-                    $('<li>')
-                        .text(paramError.param + ": " + paramError.message)
-                        .appendTo(errorList);
+                    $('<p class="alert alert-danger">').text(paramError.message).appendTo(pin_errorContainer);
                 });
             }
 
-            errorContainer.show();
+            pin_errorContainer.show();
 
             // Re-enable the submit button
             submitButton.removeAttr('disabled');
@@ -175,6 +168,8 @@ extract($vars);
 
 <div class="panel panel-default credit-card-box">
     <div class="panel-body">
+        <div style="display:none;" class="store-payment-errors pin-payment-errors">
+        </div>
         <div class="row">
             <div class="col-xs-12">
                 <div class="form-group">
@@ -183,7 +178,7 @@ extract($vars);
                         <input
                             type="tel"
                             class="form-control"
-                            id="cc-number"
+                            id="pin-cc-number"
                             placeholder="<?= t('Card Number');?>"
                             autocomplete="cc-number"
                             />
@@ -199,7 +194,7 @@ extract($vars);
                     <input
                         type="tel"
                         class="form-control"
-                        id="cc-exp"
+                        id="pin-cc-exp"
                         placeholder="MM / YY"
                         autocomplete="cc-exp"
                         />
@@ -211,16 +206,12 @@ extract($vars);
                     <input
                         type="tel"
                         class="form-control"
-                        id="cc-cvc"
+                        id="pin-cc-cvc"
                         placeholder="<?= t('CVC');?>"
                         autocomplete="off"
                         />
                 </div>
             </div>
-        </div>
-        <div style="display:none;" class="payment-errors">
-            <h3></h3>
-            <ul></ul>
         </div>
     </div>
 </div>

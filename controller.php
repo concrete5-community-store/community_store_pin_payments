@@ -5,13 +5,16 @@ use Package;
 use Whoops\Exception\ErrorException;
 use \Concrete\Package\CommunityStore\Src\CommunityStore\Payment\Method as PaymentMethod;
 
-require 'vendor/autoload.php';
-
 class Controller extends Package
 {
     protected $pkgHandle = 'community_store_pin_payments';
     protected $appVersionRequired = '5.7.5';
     protected $pkgVersion = '1.0';
+
+    public function on_start()
+    {
+        require __DIR__ . '/vendor/autoload.php';
+    }
 
     public function getPackageDescription()
     {
