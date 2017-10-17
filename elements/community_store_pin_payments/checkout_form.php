@@ -6,7 +6,7 @@ extract($vars);
 
 <script>
     // 1. Wait for the page to load
-    $(function() {
+    $(window).on('load', function() {
 
         var form = $('#store-checkout-form-group-payment'),
             submitButton = form.find("[data-payment-method-id=\"<?= $pmID; ?>\"] .store-btn-complete-order"),

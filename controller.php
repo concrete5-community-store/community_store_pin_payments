@@ -9,7 +9,7 @@ class Controller extends Package
 {
     protected $pkgHandle = 'community_store_pin_payments';
     protected $appVersionRequired = '5.7.5';
-    protected $pkgVersion = '1.0';
+    protected $pkgVersion = '1.0.1';
 
     public function on_start()
     {
